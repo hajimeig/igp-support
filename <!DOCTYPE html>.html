@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenAI Chat</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+    .chat-container {
+        width: 50%;
+        margin: 0 auto;
+        border: 1px solid #ccc;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .chat-entry {
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+    .chat-response {
+        margin-top: 20px;
+    }
+</style>
+</head>
+<body>
+
+<div class="chat-container">
+    <input type="text" class="chat-entry" id="chatEntry" placeholder="Type your message...">
+    <div class="chat-response" id="chatResponse"></div>
+</div>
+
+<script>
+    // JavaScript code to handle chat
+document.addEventListener('DOMContentLoaded', (event) => {
+    document.getElementById('chatEntry').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            const userMessage = this.value;
+            this.value = '';
+
+            const chatResponse = document.getElementById('chatResponse');
+
+            // Display user message
+            chatResponse.innerHTML += `<div><strong>You:</strong> ${userMessage}</div>`;
+
+            // Call Azure function
+            fetch('http://localhost:7071/api/HTTPTrigger1', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ messages: [{ role: "user", content: userMessage }] }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display model response
+                chatResponse.innerHTML += `<div><strong>Assistant:</strong> ${data.choices[0].message.content}</div>`;
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+    });
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,7 @@
+azure-functions
+openai
+opencensus-ext-azure==1.0.8
+azure-cosmos
+requests
+charset_normalizer
+python-dotenv==0.21.1
