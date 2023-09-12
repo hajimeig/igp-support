@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenAI Chat</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+    }
+    .header {
+        background-color: #f8f9fa;
+        padding: 20px;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .header img {
+        margin-right: 20px;
+    }
+    .chat-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 100vh;
+        margin: 0 auto;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .chat-entry {
+        width: 80%;
+        padding: 10px;
+        margin-top: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+    .chat-response {
+        width: 80%;
+        margin-top: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .message-box {
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px; /* Adjust as needed */
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+    .message-box.user {
+        border-color: blue; /* User message border color */
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .message-box.assistant {
+        border-color: green; /* Assistant message border color */
+        margin-top: 30px; /* Margin between user and assistant message */
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+</style>
+</head>
+<body>
+    <div class="header">
+        <img src="favicon.png" alt="Logo" width="50" height="50"> <!-- Replace with your logo path -->
+        <h1>IGP-Support</h1>
+    </div>
+<div class="chat-container">
+    <div class="chat-response" id="chatResponse"></div>
+    <input type="text" class="chat-entry" id="chatEntry" placeholder="Type your message...">
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        document.getElementById('chatEntry').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                const userMessage = this.value;
+                this.value = '';
+
+                const chatResponse = document.getElementById('chatResponse');
+
+                // Create and display user message box
+                const userMessageBox = document.createElement('div');
+                userMessageBox.classList.add('message-box', 'user');
+                userMessageBox.innerHTML = `<strong>You:</strong> ${userMessage}`;
+                chatResponse.appendChild(userMessageBox);
+
+                // Call Azure function
+                fetch('http://localhost:7071/api/HTTPTrigger1', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ messages: [{ role: "user", content: userMessage }] }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Create and display model response box
+                    const modelResponseBox = document.createElement('div');
+                    modelResponseBox.classList.add('message-box', 'assistant');
+                    modelResponseBox.innerHTML = `<strong>Assistant:</strong> ${data.choices[0].message.content}`;
+                    chatResponse.appendChild(modelResponseBox);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+            }
+        });
+    });
+</script>
+</body>
+</html>
