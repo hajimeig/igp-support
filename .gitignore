@@ -96,7 +96,7 @@ celerybeat-schedule
 *.sage.py
 
 # Environments
-.env
+HttpTrigger1/.env
 .venv
 env/
 venv/
